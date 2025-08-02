@@ -1,0 +1,26 @@
+
+Air Unit Connections
+
+    Battery Pads → Buck Converter (VIN)
+
+    Buck Converter (VOUT 5V) → MCU + LoRa + Servo VCC
+
+    MCU GND → LoRa GND → Servo GND → Buck Converter GND
+
+    MCU SPI Pins (MISO, MOSI, SCK, NSS) → LoRa SPI Pins
+
+    MCU Digital Pin → Servo PWM Pin (signal)
+
+    TVS Diode across battery input pads (for surge protection).
+
+Ground Unit Connections
+
+    18650 Battery → TP4056 Charger Module → 5V Rail
+
+    5V Rail → MCU + LoRa + OLED
+
+    MCU SPI Pins → LoRa SPI Pins
+
+    MCU I2C Pins (SDA/SCL) → OLED SDA/SCL
+
+    Push Buttons → MCU GPIO pins with pull-down resistors
