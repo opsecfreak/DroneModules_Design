@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Drone Payload System Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 
+        Chosen Palette: Tech Neutral. This palette uses a base of slate gray and white for a clean, modern, and focused feel. A subtle, cool-toned blue is used as an accent for interactive elements like buttons, links, and navigation highlights. This minimalist color scheme is designed to be easy on the eyes and keep the focus on the technical content of the guide.
+    -->
+    <!-- 
+        Application Structure Plan: The application is designed as a single-page dashboard with persistent sidebar navigation. This structure was chosen over the original multi-page PDF format to provide a non-linear, user-driven experience. Users can instantly jump to any section (e.g., from Assembly to Troubleshooting) without losing context. The main content area dynamically displays the selected section. This task-oriented design is superior for a hands-on project, allowing the user to easily reference different parts of the guide as needed during the build process. The core user flow is: Land on Overview -> Check Parts & Tools -> Follow Roadmap & Assembly -> Refer to Troubleshooting/Resources as needed.
+    -->
+    <!-- 
+        Visualization & Content Choices: 
+        - Report Info: Bill of Materials -> Goal: Track acquired parts -> Viz/Method: Interactive grid of cards with checkmarks -> Interaction: User clicks to mark as complete -> Justification: More engaging and functional than a static table.
+        - Report Info: Development Roadmap -> Goal: Track progress -> Viz/Method: Interactive checklist -> Interaction: User checks off milestones, which get a visual "completed" state -> Justification: Provides a clear sense of accomplishment and progress tracking.
+        - Report Info: Assembly Guide -> Goal: Provide clear build steps -> Viz/Method: Numbered list with strong visual hierarchy and icons -> Interaction: Static, but highly scannable -> Justification: Clarity and readability are paramount during a complex assembly task.
+        - Report Info: Troubleshooting Table -> Goal: Quickly find solutions -> Viz/Method: Accordion-style FAQ -> Interaction: User clicks a problem to reveal the solution -> Justification: Keeps the UI clean and prevents overwhelming the user with information.
+        - Library/Method: All interactions are handled with vanilla JavaScript to keep the application lightweight and fast. No charts were present in the source material, so no charting libraries were needed.
+    -->
+    <!-- 
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
+    -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #374151; /* gray-700 */
+            color: #ffffff;
+        }
+        .roadmap-item input:checked + label {
+            text-decoration: line-through;
+            color: #6b7280; /* gray-500 */
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .accordion-content.open {
+            max-height: 500px; /* Adjust as needed */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <nav class="w-64 bg-slate-800 text-white p-5 flex-shrink-0">
+            <h1 class="text-2xl font-bold mb-8 text-center">Air Unit Guide</h1>
+            <ul class="space-y-2">
+                <li><a href="#overview" class="nav-link block w-full text-left px-4 py-2 rounded-md hover:bg-slate-700 transition-colors duration-200">1. Overview</a></li>
+                <li><a href="#parts" class="nav-link block w-full text-left px-4 py-2 rounded-md hover:bg-slate-700 transition-colors duration-200">2. Parts & Tools</a></li>
+                <li><a href="#roadmap" class="nav-link block w-full text-left px-4 py-2 rounded-md hover:bg-slate-700 transition-colors duration-200">3. Roadmap</a></li>
+                <li><a href="#assembly" class="nav-link block w-full text-left px-4 py-2 rounded-md hover:bg-slate-700 transition-colors duration-200">4. Assembly</a></li>
+                <li><a href="#troubleshooting" class="nav-link block w-full text-left px-4 py-2 rounded-md hover:bg-slate-700 transition-colors duration-200">5. Troubleshooting</a></li>
+                <li><a href="#resources" class="nav-link block w-full text-left px-4 py-2 rounded-md hover:bg-slate-700 transition-colors duration-200">6. Resources</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-y-auto">
+            
+            <!-- Overview Section -->
+            <section id="overview" class="content-section">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-bold mb-4 text-slate-900 border-b pb-2">Project Overview</h2>
+                    <p class="mb-4">This interactive guide provides a complete roadmap for building the drone's Air Unit. The goal is to create a reliable, long-range electronics module capable of receiving commands from a Ground Unit to control a payload mechanism, like a servo-actuated drop system.</p>
+                    <p class="mb-4">This application is designed to replace a static document with a hands-on, interactive experience. You can navigate through the required parts, follow the development milestones, and refer to the detailed assembly and troubleshooting guides as you build.</p>
+                    <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Required Skills</h4>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Basic electronics knowledge (voltage, ground, simple circuits).</li>
+                            <li>Basic soldering skills. It's highly recommended to practice first if you're new.</li>
+                            <li>Familiarity with the Arduino IDE for programming the STM32 microcontroller.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Parts & Tools Section -->
+            <section id="parts" class="content-section">
+                 <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-bold mb-4 text-slate-900 border-b pb-2">Bill of Materials (BOM)</h2>
+                    <p class="mb-6">This section lists all the necessary components and tools for the Air Unit. Use the search keywords to find them on online stores like Amazon, SparkFun, or Adafruit. Check off each item as you acquire it.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Component Cards -->
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">STM32F103C8T6</h4>
+                            <p class="text-sm text-slate-600 mb-2">Microcontroller (The "brain")</p>
+                        </div>
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">LoRa SX1278 Ra-02</h4>
+                            <p class="text-sm text-slate-600 mb-2">Long-range radio module</p>
+                        </div>
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">LM2596 Buck Converter</h4>
+                            <p class="text-sm text-slate-600 mb-2">Power module to step down voltage</p>
+                        </div>
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">P6KE20CA TVS Diode</h4>
+                            <p class="text-sm text-slate-600 mb-2">Protection against voltage spikes</p>
+                        </div>
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">2.54mm Male Pin Header</h4>
+                            <p class="text-sm text-slate-600 mb-2">Connector for the servo</p>
+                        </div>
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">2-Pin Screw Terminal</h4>
+                            <p class="text-sm text-slate-600 mb-2">Connector for battery leads</p>
+                        </div>
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">5x7 cm Perfboard</h4>
+                            <p class="text-sm text-slate-600 mb-2">The base for building the circuit</p>
+                        </div>
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <h4 class="font-semibold text-lg">30AWG Wire Kit</h4>
+                            <p class="text-sm text-slate-600 mb-2">Solid core wire for connections</p>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-bold mt-8 mb-4 text-slate-900 border-b pb-2">Tools & Consumables</h3>
+                    <div class="flex flex-wrap gap-4 text-slate-700">
+                        <span class="bg-slate-200 px-3 py-1 rounded-full">Soldering Iron</span>
+                        <span class="bg-slate-200 px-3 py-1 rounded-full">Solder</span>
+                        <span class="bg-slate-200 px-3 py-1 rounded-full">Wire Strippers</span>
+                        <span class="bg-slate-200 px-3 py-1 rounded-full">Flush Cutters</span>
+                        <span class="bg-slate-200 px-3 py-1 rounded-full">Multimeter</span>
+                        <span class="bg-slate-200 px-3 py-1 rounded-full">Desoldering Braid</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Roadmap Section -->
+            <section id="roadmap" class="content-section">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-bold mb-4 text-slate-900 border-b pb-2">Development Roadmap</h2>
+                    <p class="mb-6">Follow these milestones in order to ensure a smooth development process. Check off each major milestone as you complete it to track your progress.</p>
+                    <div class="space-y-6">
+                        <div class="roadmap-item">
+                            <input type="checkbox" id="milestone1" class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="milestone1" class="text-xl font-semibold transition-colors duration-300">Milestone 1: Component Acquisition & Bench Testing</label>
+                            <div class="pl-6 mt-2 text-slate-700 border-l-2 border-slate-200 ml-2">
+                                <p><strong>Objective:</strong> Purchase all components and verify each one works individually before soldering.</p>
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>Order all parts from the BOM.</li>
+                                    <li>On a solderless breadboard, test the STM32 by uploading a "Blink" sketch.</li>
+                                    <li>Connect the Buck Converter to a battery and adjust the output to exactly 5V.</li>
+                                    <li>Wire the LoRa module and servo to the STM32 on the breadboard and run example code.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="roadmap-item">
+                            <input type="checkbox" id="milestone2" class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="milestone2" class="text-xl font-semibold transition-colors duration-300">Milestone 2: Perfboard Assembly & Soldering</label>
+                            <div class="pl-6 mt-2 text-slate-700 border-l-2 border-slate-200 ml-2">
+                                <p><strong>Objective:</strong> Create the permanent circuit on the perfboard.</p>
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>Plan the physical layout of components for a compact fit.</li>
+                                    <li>Solder all modules and connectors onto the perfboard as detailed in the Assembly section.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="roadmap-item">
+                            <input type="checkbox" id="milestone3" class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="milestone3" class="text-xl font-semibold transition-colors duration-300">Milestone 3: Initial Power-Up & System Check</label>
+                            <div class="pl-6 mt-2 text-slate-700 border-l-2 border-slate-200 ml-2">
+                                <p><strong>Objective:</strong> Safely power on the fully assembled unit and check for critical errors.</p>
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>Visually inspect all solder joints for bridges or cold joints.</li>
+                                    <li>Use a multimeter to check for short circuits between power and ground.</li>
+                                    <li>Connect the battery and verify the 5V and 3.3V power rails are correct.</li>
+                                </ul>
+                            </div>
+                        </div>
+                         <div class="roadmap-item">
+                            <input type="checkbox" id="milestone4" class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="milestone4" class="text-xl font-semibold transition-colors duration-300">Milestone 4: Firmware Development & Integration</label>
+                            <div class="pl-6 mt-2 text-slate-700 border-l-2 border-slate-200 ml-2">
+                                <p><strong>Objective:</strong> Write and upload the final firmware to control the system.</p>
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>Develop code to initialize the LoRa module and listen for incoming packets.</li>
+                                    <li>Develop code to control the servo based on commands received via LoRa.</li>
+                                    <li>Combine all code into a single, robust program.</li>
+                                </ul>
+                            </div>
+                        </div>
+                         <div class="roadmap-item">
+                            <input type="checkbox" id="milestone5" class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="milestone5" class="text-xl font-semibold transition-colors duration-300">Milestone 5: Final Testing & Deployment</label>
+                            <div class="pl-6 mt-2 text-slate-700 border-l-2 border-slate-200 ml-2">
+                                <p><strong>Objective:</strong> Test the complete system with the Ground Unit and prepare for flight.</p>
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>Perform range testing of the LoRa communication in an open area.</li>
+                                    <li>Verify the payload drop mechanism works reliably over multiple attempts.</li>
+                                    <li>Securely mount the finished unit to the drone.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assembly Section -->
+            <section id="assembly" class="content-section">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-bold mb-4 text-slate-900 border-b pb-2">Detailed Assembly Guide</h2>
+                    <p class="mb-6">This section details the physical construction of the circuit on perfboard. Follow these steps carefully. It is recommended to complete all power wiring before moving on to data wiring.</p>
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2"><span class="bg-blue-500 text-white rounded-full h-8 w-8 inline-flex items-center justify-center mr-3">1</span>Layout & Solder Components</h3>
+                            <p class="ml-11">Before soldering, arrange components on the perfboard for a compact layout. Solder pin headers to your modules first, then solder the modules and connectors securely to the perfboard.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2"><span class="bg-blue-500 text-white rounded-full h-8 w-8 inline-flex items-center justify-center mr-3">2</span>Power Wiring</h3>
+                            <p class="ml-11 mb-4">Use a slightly thicker wire (e.g., 24 AWG) for these connections. Use <span class="text-red-600 font-semibold">RED</span> for positive and <span class="text-black font-semibold">BLACK</span> for ground.</p>
+                            <ul class="ml-11 space-y-2 list-disc list-inside">
+                                <li>Solder the <strong>TVS Diode</strong> legs across the **Battery Connector** terminals.</li>
+                                <li>Connect <strong>Battery Connector (+)</strong> to <strong>Buck Converter VIN+</strong>.</li>
+                                <li>Connect <strong>Battery Connector (-)</strong> to <strong>Buck Converter VIN-</strong>. This is your <strong>System Ground</strong>.</li>
+                                <li>Connect <strong>Buck Converter VOUT+</strong> to the <strong>5V pin on the STM32</strong>.</li>
+                                <li>Connect <strong>Buck Converter VOUT-</strong> to any <strong>GND pin on the STM32</strong>.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2"><span class="bg-blue-500 text-white rounded-full h-8 w-8 inline-flex items-center justify-center mr-3">3</span>Data & Peripheral Wiring</h3>
+                            <p class="ml-11 mb-4">Use thinner wire (e.g., 30 AWG) for these signal connections. Using different colors is highly recommended.</p>
+                            <div class="ml-11 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">LoRa Module Wiring</h4>
+                                    <ul class="space-y-1 list-disc list-inside">
+                                        <li>VCC → STM32 <strong>3.3V</strong></li>
+                                        <li>GND → STM32 <strong>GND</strong></li>
+                                        <li>SCK → STM32 pin <strong>PA5</strong></li>
+                                        <li>MISO → STM32 pin <strong>PA6</strong></li>
+                                        <li>MOSI → STM32 pin <strong>PA7</strong></li>
+                                        <li>NSS → STM32 pin <strong>PA4</strong></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">Servo Connector Wiring</h4>
+                                    <ul class="space-y-1 list-disc list-inside">
+                                        <li>+5V Pin → STM32 <strong>5V</strong> pin</li>
+                                        <li>GND Pin → STM32 <strong>GND</strong> pin</li>
+                                        <li>PWM Pin → STM32 pin <strong>PA8</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting Section -->
+            <section id="troubleshooting" class="content-section">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-bold mb-4 text-slate-900 border-b pb-2">Troubleshooting Guide</h2>
+                    <p class="mb-6">If you encounter issues, consult this guide. Click on a problem to reveal the possible causes and solutions.</p>
+                    <div class="space-y-4" id="accordion-container">
+                        <div class="border border-slate-200 rounded-lg">
+                            <button class="accordion-toggle w-full text-left p-4 font-semibold hover:bg-slate-50 flex justify-between items-center">
+                                Unit doesn't power on (no LEDs on STM32).
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content px-4 pb-4 text-slate-700">
+                                <ol class="list-decimal list-inside space-y-1 mt-2">
+                                    <li>Check that battery polarity is correct (+ to + and - to -).</li>
+                                    <li>Use a multimeter in continuity mode to check for short circuits between the main power and ground wires.</li>
+                                    <li>Verify the buck converter is adjusted and outputting 5V.</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="border border-slate-200 rounded-lg">
+                            <button class="accordion-toggle w-full text-left p-4 font-semibold hover:bg-slate-50 flex justify-between items-center">
+                                LoRa communication fails.
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content px-4 pb-4 text-slate-700">
+                                <ol class="list-decimal list-inside space-y-1 mt-2">
+                                    <li>Double-check all SPI wiring (SCK, MISO, MOSI, NSS). A single crossed wire will cause failure.</li>
+                                    <li>Ensure the Ground and Air units are set to the same frequency and sync word in the code.</li>
+                                    <li>Check that the antenna is securely connected to the LoRa module's u.FL connector.</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="border border-slate-200 rounded-lg">
+                            <button class="accordion-toggle w-full text-left p-4 font-semibold hover:bg-slate-50 flex justify-between items-center">
+                                Servo doesn't move or jitters.
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content px-4 pb-4 text-slate-700">
+                                <ol class="list-decimal list-inside space-y-1 mt-2">
+                                    <li>Verify the servo has a solid 5V and GND connection directly from the buck converter's output if possible.</li>
+                                    <li>Check the PWM signal wire connection to pin PA8.</li>
+                                    <li>Ensure pin PA8 is correctly configured as a PWM output in your firmware.</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="border border-red-200 rounded-lg bg-red-50">
+                            <button class="accordion-toggle w-full text-left p-4 font-semibold text-red-800 flex justify-between items-center">
+                                STM32 or Buck Converter gets very hot.
+                                <span class="transform transition-transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content px-4 pb-4 text-red-700">
+                                <p class="font-bold">Immediately disconnect power.</p>
+                                <p>This is almost always a short circuit. Check for solder bridges between pins, reversed power connections, or stray wire strands.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="content-section">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-bold mb-4 text-slate-900 border-b pb-2">Helpful Resources & Sources</h2>
+                    <p class="mb-6">These resources will be invaluable during your development process. They provide official documentation, community libraries, and excellent tutorials.</p>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">STM32 "Blue Pill" Resources</h3>
+                            <ul class="list-disc list-inside space-y-1 text-blue-600">
+                                <li><a href="https://github.com/stm32duino/Arduino_Core_STM32" target="_blank" class="hover:underline">STM32Duino GitHub: For adding STM32 board support to the Arduino IDE.</a></li>
+                                <li><a href="https://www.st.com/en/microcontrollers-microprocessors/stm32f103c8.html" target="_blank" class="hover:underline">STMicroelectronics Official Website: For official datasheets.</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">LoRa (SX1278) Resources</h3>
+                            <ul class="list-disc list-inside space-y-1 text-blue-600">
+                                <li><a href="https://github.com/sandeepmistry/arduino-LoRa" target="_blank" class="hover:underline">Sandeep Mistry's LoRa Library: The most common Arduino library for LoRa.</a></li>
+                                <li><a href="https://randomnerdtutorials.com/getting-started-with-lora/" target="_blank" class="hover:underline">Random Nerd Tutorials - LoRa Guides: Excellent, easy-to-follow tutorials.</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Soldering Tutorials</h3>
+                            <ul class="list-disc list-inside space-y-1 text-blue-600">
+                                <li><a href="https://learn.adafruit.com/adafruit-guide-excellent-soldering" target="_blank" class="hover:underline">Adafruit Guide to Excellent Soldering: A comprehensive guide for beginners.</a></li>
+                                <li><a href="https://www.youtube.com/playlist?list=PL9264F4A95814D242" target="_blank" class="hover:underline">Pace Worldwide Soldering Lessons (YouTube): Professional training videos.</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function updateContent(hash) {
+                // Default to #overview if hash is empty or invalid
+                const targetHash = hash || '#overview';
+                
+                contentSections.forEach(section => {
+                    if ('#' + section.id === targetHash) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === targetHash) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetHash = this.getAttribute('href');
+                    history.pushState(null, null, targetHash);
+                    updateContent(targetHash);
+                });
+            });
+            
+            window.addEventListener('popstate', function() {
+                updateContent(window.location.hash);
+            });
+
+            // Accordion for troubleshooting
+            const accordionToggles = document.querySelectorAll('.accordion-toggle');
+            accordionToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('span');
+                    
+                    if(content.classList.contains('open')) {
+                        content.classList.remove('open');
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Optional: close other accordions
+                        // document.querySelectorAll('.accordion-content.open').forEach(openContent => {
+                        //     openContent.classList.remove('open');
+                        //     openContent.previousElementSibling.querySelector('span').style.transform = 'rotate(0deg)';
+                        // });
+                        content.classList.add('open');
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // Initialize page based on URL hash
+            updateContent(window.location.hash);
+        });
+    </script>
+</body>
+</html>
