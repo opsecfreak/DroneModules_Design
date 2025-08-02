@@ -1,0 +1,27 @@
+Air Unit
+
+    Microcontroller (ESP32 or STM32F103C8T6)
+
+    LoRa Module (SX1278 Ra-02 for 433 MHz OR RFM95W for 915 MHz US)
+
+    Buck Converter (LM2596 symbol or generic DC-DC regulator)
+
+    TVS Diode (for surge protection)
+
+    Servo Connector (3-pin header: GND, +5V, PWM)
+
+    Battery Pads (to solder drone battery leads)
+
+Ground Unit
+
+    Same MCU (ESP32 or STM32)
+
+    LoRa Module (same as Air Unit)
+
+    18650 Battery Holder
+
+    TP4056 Charging Circuit
+
+    Push Buttons (for DROP, LED toggle)
+
+    OLED Display (0.96” I2C OLED)
