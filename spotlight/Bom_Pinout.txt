@@ -1,0 +1,185 @@
+Components and Connections
+
+Battery and Holder:
+
+Component: 18650 Battery Holder (LCSC: C128606)
+Symbol: EasyEDA “Battery” symbol (3.7V nominal, ~2600mAh).
+Connections:
+
+Positive (BAT+) to PCM input positive (B+).
+Negative (BAT-) to PCM input negative (B-).
+For two batteries (1S2P, parallel for ~5200mAh), connect both positives to BAT+ and both negatives to BAT-.
+
+
+
+
+Battery Protection Circuit Module (PCM):
+
+Component: 1S 18650 Protection Board (LCSC: C511607)
+Symbol: Rectangular block with pins: B+ (battery positive), B- (battery negative), P+ (protected output positive), P- (protected output negative).
+Connections:
+
+B+ to BAT+.
+B- to BAT-.
+P+ to SPDT switch input.
+P- to ground plane (GND).
+
+
+
+
+Switch:
+
+Component: SPDT Slide Switch (LCSC: C319441)
+Symbol: EasyEDA “SPDT” switch.
+Connections:
+
+Common pin to P+ (from PCM).
+One throw to circuit positive rail (VCC).
+Second throw unconnected or tied to GND.
+
+
+
+
+Polyfuse:
+
+Component: 3A Polyfuse (LCSC: C70374)
+Symbol: EasyEDA “Fuse” symbol.
+Connections:
+
+Input to VCC (switch output).
+Output to LED circuit positive (VCC_PROT).
+
+
+
+
+LED:
+
+Component: XL-2835WWC-02 (LCSC: C2843875)
+Symbol: EasyEDA “LED” symbol (3.0–3.4V, 150mA assumed for calculations).
+Connections:
+
+Anode to current-limiting resistor output.
+Cathode to GND.
+
+
+
+
+Current-Limiting Resistor:
+
+Component: 3.3Ω, 1/4W Resistor (LCSC: C211107)
+Symbol: EasyEDA “Resistor” symbol.
+Calculation: For V_batt = 3.7V, V_LED = 3.3V, I_LED = 150mA:
+
+R = (3.7V – 3.3V) / 0.15A ≈ 2.67Ω (use 3.3Ω for safety).
+Power: (0.4V × 0.15A) = 0.06W (1/4W sufficient).
+
+
+Connections:
+
+Input to VCC_PROT (polyfuse output).
+Output to LED anode.
+
+
+
+
+Capacitor (for stability):
+
+Component: 22µF, 0603 Ceramic Capacitor (LCSC: C216593)
+Symbol: EasyEDA “Capacitor” symbol.
+Connections:
+
+Across VCC_PROT and GND (parallel to LED circuit).
+Optional second capacitor across BAT+ and BAT- for battery input stability.
+
+
+
+
+Optional Charging Module:
+
+Component: TP4056 USB-C Module (LCSC: C2681626)
+Symbol: Rectangular block with IN+ (USB-C 5V), IN-, OUT+, OUT-.
+Connections:
+
+IN+ to USB-C connector positive (LCSC: C393947).
+IN- to GND.
+OUT+ to BAT+ (before PCM).
+OUT- to BAT- (before PCM).
+
+
+Note: Ensure PCM and TP4056 are compatible to avoid charging conflicts.
+
+
+
+
+EasyEDA Instructions to Create the Schematic
+
+Open EasyEDA:
+
+Go to easyeda.com and log in or create an account.
+Start a new schematic project: File > New > Schematic.
+
+
+Add Components:
+
+Open the “Library” panel (left sidebar).
+Search for components using LCSC part numbers or generic symbols:
+
+Battery: Search “Battery” (set voltage to 3.7V).
+PCM: Use a generic 4-pin connector block (label pins B+, B-, P+, P-).
+SPDT Switch: Search “SPDT” or “Switch.”
+Polyfuse: Search “Fuse.”
+LED: Search “LED” (select SMD 2835 footprint for XL-2835WWC-02).
+Resistor: Search “Resistor” (0603 or 0805 package).
+Capacitor: Search “Capacitor” (0603 package).
+TP4056 (optional): Use a 4-pin connector block (label IN+, IN-, OUT+, OUT-).
+USB-C Connector (optional): Search “USB-C” or “Connector.”
+
+
+Place components on the schematic canvas by dragging from the library.
+
+
+Wire Connections:
+
+Use the “Wire” tool (or press ‘W’) to draw connections:
+
+Battery: BAT+ to PCM B+, BAT- to PCM B-.
+PCM: P+ to switch common pin, P- to GND (use EasyEDA’s “GND” symbol).
+Switch: Output throw to VCC net (label as “VCC”).
+Polyfuse: Input to VCC, output to VCC_PROT net.
+Resistor: Input to VCC_PROT, output to LED anode.
+LED: Cathode to GND.
+Capacitor: Across VCC_PROT and GND.
+TP4056 (optional): IN+ to USB-C positive, IN- to GND, OUT+ to BAT+, OUT- to BAT-.
+
+
+Use “Net Label” tool to label nets (e.g., VCC, VCC_PROT, GND) for clarity.
+
+
+Annotate and Verify:
+
+Assign component designators (e.g., B1 for battery, R1 for resistor, D1 for LED) using the “Design Manager.”
+Run “Design Rule Check” (DRC) in EasyEDA to ensure no open circuits or errors.
+Add notes (e.g., “3.3Ω for 150mA”) using the “Text” tool for reference.
+
+
+Save and Export:
+
+Save the schematic: File > Save.
+To create an image for reference:
+
+Go to File > Export > PNG (or take a screenshot).
+This generates a visual schematic you can save or print.
+
+
+Export the BOM: Design > BOM Export to list components for ordering.
+
+
+PCB Layout (Next Steps):
+
+After completing the schematic, click “Convert to PCB” in EasyEDA.
+Place components compactly (e.g., 30x50mm board for UAV).
+Route traces (20–30 mil for high-current paths like battery to LED).
+Add thermal vias under the LED (use “Via” tool, 0.3mm diameter).
+Export Gerber files for JLCPCB fabrication.
+
+

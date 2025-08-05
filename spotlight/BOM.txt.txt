@@ -1,0 +1,239 @@
+Simplified Bill of Materials (BOM)
+
+
+
+
+
+
+
+Component
+
+
+
+LCSC Part Number
+
+
+
+Specifications
+
+
+
+Quantity
+
+
+
+Purpose
+
+
+
+
+
+18650 Battery Holder
+
+
+
+C128606
+
+
+
+Single-cell, button-top, PCB-mount
+
+
+
+1–2
+
+
+
+Holds 18650 battery
+
+
+
+
+
+1S Protection Board
+
+
+
+C511607
+
+
+
+3–5A, overcharge/discharge protection
+
+
+
+1
+
+
+
+Battery safety
+
+
+
+
+
+SPDT Slide Switch
+
+
+
+C319441
+
+
+
+3A, 12V, PCB-mount
+
+
+
+1
+
+
+
+On/off control
+
+
+
+
+
+Polyfuse
+
+
+
+C70374
+
+
+
+3A, resettable
+
+
+
+1
+
+
+
+Short-circuit protection
+
+
+
+
+
+XL-2835WWC-02 LED
+
+
+
+C2843875
+
+
+
+3.0–3.4V, 150mA, ~1W
+
+
+
+1
+
+
+
+Illumination
+
+
+
+
+
+Resistor
+
+
+
+C211107
+
+
+
+3.3Ω, 1/4W
+
+
+
+1
+
+
+
+LED current limiting
+
+
+
+
+
+Ceramic Capacitor
+
+
+
+C216593
+
+
+
+22µF, 0603
+
+
+
+1
+
+
+
+Power stabilization
+
+
+
+
+
+TP4056 Charging Module
+
+
+
+C2681626
+
+
+
+USB-C, 4.2V, 1A
+
+
+
+1 (optional)
+
+
+
+Battery charging
+
+
+
+
+
+USB-C Connector
+
+
+
+C393947
+
+
+
+5V, 3A
+
+
+
+1 (optional)
+
+
+
+Charging input
+
+Notes:
+
+
+
+
+
+Quantities assume a single LED and one battery. For dual batteries (1S2P), use two holders.
+
+
+
+Optional components (TP4056, USB-C) are for field recharging; omit for minimal design.
+
+
+
+Source all parts from LCSC.com for compatibility with JLCPCB SMT assembly.
